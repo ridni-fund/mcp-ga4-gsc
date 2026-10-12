@@ -1,5 +1,6 @@
 import type { AuthRequest, OAuthHelpers } from "@cloudflare/workers-oauth-provider";
 import { type Context, Hono } from "hono";
+import { renderHomePage, renderPrivacyPage } from "./pages";
 import { fetchUpstreamAuthToken, getUpstreamAuthorizeUrl, type Props } from "./utils";
 import {
 	clientIdAlreadyApproved,
@@ -79,6 +80,13 @@ function renderDeniedPage(email: string): string {
 /* -------------------------------------------------------------------------- */
 /* OAuth flow                                                                 */
 /* -------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------- */
+/* Public pages (Google OAuth consent screen: home page + privacy policy)     */
+/* -------------------------------------------------------------------------- */
+
+app.get("/", (c) => c.html(renderHomePage(new URL(c.req.url).origin)));
+app.get("/privacy", (c) => c.html(renderPrivacyPage()));
 
 app.get("/authorize", async (c) => {
 	const oauthReqInfo = await c.env.OAUTH_PROVIDER.parseAuthRequest(c.req.raw);
