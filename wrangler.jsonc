@@ -6,6 +6,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ridni-mcp",
   "main": "src/index.ts",
+  "preview_urls": false,
   "compatibility_date": "2025-03-10",
   "compatibility_flags": ["nodejs_compat"],
   // ALLOWED_EMAILS, ALLOWED_DOMAINS and ALIAS_PATHS are set as secrets
