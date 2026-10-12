@@ -515,6 +515,9 @@ function isAllowedForPath(
 }
 
 const mcpHandler = MyMCP.mount("/sse") as any;
+// Streamable HTTP transport (current MCP spec). SSE is kept for backward
+// compatibility; new connectors (Claude org connectors, Inspector) should use /mcp.
+const mcpStreamableHandler = MyMCP.serve("/mcp") as any;
 
 /**
  * Wraps an outgoing SSE response with two behaviors:
@@ -622,6 +625,11 @@ const apiHandler = {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext) {
 		const url = new URL(request.url);
 
+		// Streamable HTTP endpoint, no alias rewriting needed
+		if (url.pathname === "/mcp" || url.pathname.startsWith("/mcp/")) {
+			return mcpStreamableHandler.fetch(request, env, ctx);
+		}
+
 		// Path-based access control (optional, configured via PATH_EMAIL_MAP)
 		const pathEmailMap = parsePathEmailMap(env.PATH_EMAIL_MAP);
 		if (Object.keys(pathEmailMap).length > 0) {
@@ -657,7 +665,7 @@ const apiHandler = {
 
 export default new OAuthProvider({
 	apiHandler: apiHandler as any,
-	apiRoute: "/sse",
+	apiRoute: ["/sse", "/mcp"],
 	authorizeEndpoint: "/authorize",
 	clientRegistrationEndpoint: "/register",
 	defaultHandler: GoogleHandler as any,

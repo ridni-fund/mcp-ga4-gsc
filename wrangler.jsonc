@@ -4,7 +4,7 @@
  */
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "mcp-ga4-gsc",
+  "name": "ridni-mcp",
   "main": "src/index.ts",
   "compatibility_date": "2025-03-10",
   "compatibility_flags": ["nodejs_compat"],
@@ -29,7 +29,7 @@
   "kv_namespaces": [
     {
       "binding": "OAUTH_KV",
-      "id": "a046a8a43ce24ea592a535a8690d1a18"
+      "id": "bf41a3bc236346c4acfbea1b152cd7ab"
     }
   ],
   "observability": {

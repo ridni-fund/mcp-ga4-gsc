@@ -49,11 +49,11 @@ function escapeHtml(s: string): string {
 
 function renderDeniedPage(email: string): string {
 	return `<!DOCTYPE html>
-<html lang="fr">
+<html lang="uk">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Acces refuse</title>
+  <title>Доступ заборонено</title>
   <style>
     body{font-family:system-ui,-apple-system,sans-serif;background:#f5f5f5;
       color:#26372b;display:flex;align-items:center;justify-content:center;
@@ -68,9 +68,9 @@ function renderDeniedPage(email: string): string {
 </head>
 <body>
   <div class="card">
-    <h1>Acces refuse</h1>
-    <p>Le compte <code>${escapeHtml(email)}</code> n'est pas autorise a utiliser ce serveur MCP.</p>
-    <p>Contacte l'administrateur si tu penses que c'est une erreur.</p>
+    <h1>Доступ заборонено</h1>
+    <p>Акаунт <code>${escapeHtml(email)}</code> не має доступу до цього MCP-сервера Рідних.</p>
+    <p>Якщо це помилка — напишіть адміністратору.</p>
   </div>
 </body>
 </html>`;
@@ -98,7 +98,7 @@ app.get("/authorize", async (c) => {
 		server: {
 			description:
 				"MCP server for Google Analytics 4 and Search Console. Requires read-only access to the GA4 and GSC properties of your account.",
-			name: "GA4 + Search Console MCP",
+			name: "Ridni MCP (GA4 + Search Console)",
 		},
 		state: { oauthReqInfo },
 	});
@@ -146,8 +146,13 @@ async function redirectToGoogle(
  */
 app.get("/callback", async (c) => {
 	// Get the oauthReqInfo out of state
-	const oauthReqInfo = JSON.parse(atob(c.req.query("state") as string)) as AuthRequest;
-	if (!oauthReqInfo.clientId) {
+	let oauthReqInfo: AuthRequest;
+	try {
+		oauthReqInfo = JSON.parse(atob(c.req.query("state") || "")) as AuthRequest;
+	} catch {
+		return c.text("Invalid state", 400);
+	}
+	if (!oauthReqInfo?.clientId) {
 		return c.text("Invalid state", 400);
 	}
 
@@ -190,7 +195,7 @@ app.get("/callback", async (c) => {
 
 	/* ----- Allowlist gate ------------------------------------------------- */
 	if (verified_email === false) {
-		return c.html(renderDeniedPage(email + " (non verifie)"), 403);
+		return c.html(renderDeniedPage(email + " (не підтверджено)"), 403);
 	}
 	if (!isEmailAllowed(email, c.env)) {
 		return c.html(renderDeniedPage(email), 403);
