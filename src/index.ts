@@ -3,6 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { McpAgent } from "agents/mcp";
 import { z } from "zod";
 import { GoogleHandler } from "./google-handler";
+import { ROBOTS_DIRECTIVES } from "./pages";
 import { refreshAccessToken, type Props } from "./utils";
 
 function asTextResult(payload: unknown) {
@@ -663,7 +664,7 @@ const apiHandler = {
 	},
 };
 
-export default new OAuthProvider({
+const oauthProvider = new OAuthProvider({
 	apiHandler: apiHandler as any,
 	apiRoute: ["/sse", "/mcp"],
 	authorizeEndpoint: "/authorize",
@@ -676,3 +677,24 @@ export default new OAuthProvider({
 	// refresh_token is independent and stays valid until explicitly revoked.
 	accessTokenTTL: 60 * 60 * 24 * 30,
 });
+
+/**
+ * Every response (pages, OAuth endpoints, MCP, errors) carries X-Robots-Tag so
+ * that nothing on this host is ever indexed, archived or snippeted.
+ * WebSocket upgrades (101) are passed through untouched.
+ */
+export default {
+	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+		const response = await oauthProvider.fetch(request, env, ctx);
+		if (response.status === 101 || (response as Response & { webSocket?: unknown }).webSocket) {
+			return response;
+		}
+		const headers = new Headers(response.headers);
+		headers.set("X-Robots-Tag", ROBOTS_DIRECTIVES);
+		return new Response(response.body, {
+			status: response.status,
+			statusText: response.statusText,
+			headers,
+		});
+	},
+};

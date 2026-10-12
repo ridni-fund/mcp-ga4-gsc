@@ -1,6 +1,6 @@
 import type { AuthRequest, OAuthHelpers } from "@cloudflare/workers-oauth-provider";
 import { type Context, Hono } from "hono";
-import { renderHomePage, renderPrivacyPage } from "./pages";
+import { PAGE_HEADERS, ROBOTS_TXT, renderHomePage, renderPrivacyPage, renderTermsPage } from "./pages";
 import { fetchUpstreamAuthToken, getUpstreamAuthorizeUrl, type Props } from "./utils";
 import {
 	clientIdAlreadyApproved,
@@ -85,8 +85,10 @@ function renderDeniedPage(email: string): string {
 /* Public pages (Google OAuth consent screen: home page + privacy policy)     */
 /* -------------------------------------------------------------------------- */
 
-app.get("/", (c) => c.html(renderHomePage(new URL(c.req.url).origin)));
-app.get("/privacy", (c) => c.html(renderPrivacyPage()));
+app.get("/", (c) => c.html(renderHomePage(new URL(c.req.url).origin), 200, PAGE_HEADERS));
+app.get("/privacy", (c) => c.html(renderPrivacyPage(), 200, PAGE_HEADERS));
+app.get("/terms", (c) => c.html(renderTermsPage(), 200, PAGE_HEADERS));
+app.get("/robots.txt", (c) => c.text(ROBOTS_TXT, 200, { "Cache-Control": "public, max-age=3600" }));
 
 app.get("/authorize", async (c) => {
 	const oauthReqInfo = await c.env.OAUTH_PROVIDER.parseAuthRequest(c.req.raw);
