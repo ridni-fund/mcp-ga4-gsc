@@ -1,5 +1,6 @@
 import type { AuthRequest, OAuthHelpers } from "@cloudflare/workers-oauth-provider";
 import { type Context, Hono } from "hono";
+import { FAVICON_PNG_BASE64, LOGO_PNG_BASE64, pngResponse } from "./logo";
 import { PAGE_HEADERS, ROBOTS_TXT, renderHomePage, renderPrivacyPage, renderTermsPage } from "./pages";
 import { fetchUpstreamAuthToken, getUpstreamAuthorizeUrl, type Props } from "./utils";
 import {
@@ -88,6 +89,9 @@ function renderDeniedPage(email: string): string {
 app.get("/", (c) => c.html(renderHomePage(new URL(c.req.url).origin), 200, PAGE_HEADERS));
 app.get("/privacy", (c) => c.html(renderPrivacyPage(), 200, PAGE_HEADERS));
 app.get("/terms", (c) => c.html(renderTermsPage(), 200, PAGE_HEADERS));
+app.get("/logo.png", () => pngResponse(LOGO_PNG_BASE64));
+app.get("/favicon.png", () => pngResponse(FAVICON_PNG_BASE64));
+app.get("/favicon.ico", () => pngResponse(FAVICON_PNG_BASE64));
 app.get("/robots.txt", (c) => c.text(ROBOTS_TXT, 200, { "Cache-Control": "public, max-age=3600" }));
 
 app.get("/authorize", async (c) => {
@@ -108,7 +112,8 @@ app.get("/authorize", async (c) => {
 		server: {
 			description:
 				"MCP server for Google Analytics 4 and Search Console. Requires read-only access to the GA4 and GSC properties of your account.",
-			name: "Ridni MCP (GA4 + Search Console)",
+			logo: new URL("/logo.png", c.req.url).href,
+			name: "Ridni GA4+GSC MCP",
 		},
 		state: { oauthReqInfo },
 	});

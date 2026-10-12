@@ -272,14 +272,16 @@ export function renderApprovalDialog(request: Request, options: ApprovalDialogOp
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+        <link rel="icon" type="image/png" href="/favicon.png">
         <title>${clientName} | Authorization Request</title>
         <style>
           /* Modern, responsive styling with system fonts */
           :root {
-            --primary-color: #0070f3;
+            --primary-color: #603790;
             --error-color: #f44336;
-            --border-color: #e5e7eb;
-            --text-color: #333;
+            --border-color: #E5D7F6;
+            --text-color: #3C3343;
             --background-color: #fff;
             --card-shadow: 0 8px 36px 8px rgba(0, 0, 0, 0.1);
           }
@@ -290,7 +292,7 @@ export function renderApprovalDialog(request: Request, options: ApprovalDialogOp
                          "Segoe UI Emoji", "Segoe UI Symbol";
             line-height: 1.6;
             color: var(--text-color);
-            background-color: #f9fafb;
+            background-color: #F9F4FF;
             margin: 0;
             padding: 0;
           }
@@ -399,7 +401,7 @@ export function renderApprovalDialog(request: Request, options: ApprovalDialogOp
           
           .button {
             padding: 0.75rem 1.5rem;
-            border-radius: 6px;
+            border-radius: 33px;
             font-weight: 500;
             cursor: pointer;
             border: none;

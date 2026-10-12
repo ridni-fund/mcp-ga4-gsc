@@ -13,7 +13,8 @@
 
 const CONTACT_EMAIL = "o.zhyliak@ridni.org.ua";
 const ORG_NAME = "Ridni Charitable Foundation";
-const SERVICE_NAME = "Ridni MCP";
+/** Must match the app name on the Google OAuth consent screen (Branding). */
+const SERVICE_NAME = "Ridni GA4+GSC MCP";
 const LAST_UPDATED = "2026-10-12";
 
 /** Strictest set of indexing directives understood by major crawlers. */
@@ -27,7 +28,7 @@ export const PAGE_HEADERS: Record<string, string> = {
 	"X-Content-Type-Options": "nosniff",
 	"X-Frame-Options": "DENY",
 	"Content-Security-Policy":
-		"default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+		"default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
 };
 
 /** robots.txt: allow crawling so that noindex is actually seen; opt out of AI training/snippets. */
@@ -58,21 +59,30 @@ function layout(title: string, body: string): string {
   <meta name="google" content="notranslate" />
   <meta name="referrer" content="no-referrer" />
   <meta name="format-detection" content="telephone=no, email=no, address=no" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
   <title>${title}</title>
   <style>
-    :root{--bg:#f7f7f5;--card:#fff;--text:#1f2a24;--muted:#5b6660;--accent:#2f6f4f;--line:#e4e6e3}
-    @media (prefers-color-scheme:dark){:root{--bg:#141816;--card:#1c211e;--text:#e8ece9;--muted:#a3ada7;--accent:#7cc39c;--line:#2c332f}}
+    /* Ridni brand (ridni.org.ua): primary #603790 (also links), accent #FFB627, text #3C3343 */
+    :root{--bg:#F9F4FF;--card:#FFFFFF;--text:#3C3343;--muted:#696969;--primary:#603790;--primary-dark:#431C72;--accent:#FFB627;--link:#603790;--line:#E5D7F6;--soft:#EFE7F8}
     *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;padding:32px 16px}
-    main{max-width:760px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:32px}
-    h1{font-size:1.6rem;line-height:1.25;margin:0 0 8px}
-    h2{font-size:1.15rem;margin:28px 0 8px}
+    body{margin:0;background:var(--bg);color:var(--text);font:17px/1.65 "Taktika Sans",system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;font-weight:400;padding:32px 16px}
+    main{max-width:760px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:9px;padding:32px;border-top:4px solid var(--primary)}
+    h1{font-size:1.75rem;line-height:1.25;margin:0 0 8px;font-weight:700;color:var(--primary-dark)}
+    h2{font-size:1.15rem;margin:28px 0 8px;font-weight:600;color:var(--primary)}
     .muted{color:var(--muted);font-size:.9rem}
-    a{color:var(--accent)} code{background:var(--bg);padding:2px 6px;border-radius:4px;font-size:.9em;word-break:break-all}
-    nav{margin-bottom:24px;font-size:.95rem} nav a{margin-right:16px}
+    a{color:var(--link);font-weight:500;text-decoration-thickness:1px;text-underline-offset:2px}
+    a:hover{color:var(--primary-dark)}
+    code{background:var(--soft);color:var(--primary-dark);padding:2px 8px;border-radius:6px;font-size:.9em;word-break:break-all}
+    ul{padding-left:1.2em} li::marker{color:var(--accent)}
+    nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px}
+    nav a{display:inline-block;padding:6px 16px;border-radius:33px;background:var(--soft);color:var(--primary);text-decoration:none;font-size:.9rem}
+    nav a:hover{background:var(--primary);color:#fff}
+    .brand{display:flex;align-items:center;gap:12px;margin-bottom:20px;font-weight:600;color:var(--primary-dark)}
+    .brand img{width:48px;height:48px}
   </style>
 </head>
 <body><main>
+<div class="brand"><img src="/logo.png" alt="Ridni Charitable Foundation logo" width="48" height="48" /><span>${SERVICE_NAME}</span></div>
 <nav><a href="/" rel="nofollow">Home</a><a href="/privacy" rel="nofollow">Privacy Policy</a><a href="/terms" rel="nofollow">Terms of Service</a></nav>
 ${body}
 </main></body></html>`;
@@ -83,8 +93,9 @@ const ext = (href: string, text: string) =>
 
 export function renderHomePage(origin: string): string {
 	return layout(
-		`${SERVICE_NAME}: Google Analytics 4 + Search Console`,
-		`<h1>${SERVICE_NAME}: Google Analytics 4 + Search Console</h1>
+		`${SERVICE_NAME}`,
+		`<h1>${SERVICE_NAME}</h1>
+<p>Google Analytics 4 + Google Search Console connector for Claude</p>
 <p class="muted">${ORG_NAME}</p>
 <p>${SERVICE_NAME} is an internal service of the ${ORG_NAME}. It gives the Claude AI assistant <strong>read-only</strong> access to the foundation's Google Analytics 4 and Google Search Console data, so foundation staff can analyse website traffic and search visibility.</p>
 <ul>
